@@ -23,7 +23,7 @@ const readStudentSchema = Joi.object({
 const loginSchema = Joi.object({
   username: Joi.string().email().required(),
   password: Joi.string()
-    .max(8)
+    .min(8)
     .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
     .required(),
 });

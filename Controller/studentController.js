@@ -79,8 +79,9 @@ const updateStudent = (req, res) => {
 
 const deleteStudent = (req, res) => {
   const studentID = req.query;
-  const sqlQuery = "delete from student where id = ?;";
-  const value = [studentID];
+  const sqlQuery = "delete from student where id =?;";
+  const value = [studentID.id];
+  console.log(value);
   const result = deleteSchema.validate(studentID);
   if (result.error) {
     res.status(500).send({
