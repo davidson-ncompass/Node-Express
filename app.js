@@ -1,6 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const router = require("./Controller/studentController");
+const router = require("./routes/route");
 
 const app = express();
 const PORT = 6006;
