@@ -26,34 +26,42 @@ const insertStudent = (req, res, next) => {
     res.status(500).send(response);
     next(result.error);
   } else {
-    const verified = verify(studentDetails.id);
-    console.log(verified);
-    // connection.query(sqlQuery, value, (err, results, fields) => {
-    //   if (err) {
-    //     const response = {
-    //       success: false,
-    //       message: err.message,
-    //       data: {},
-    //     };
-    //     compress(response);
-    //     res.status(500).send(response);
-    //     next(err);
+    if (verify(studentDetails.userId)) {
+      connection.query(sqlQuery, value, (err, results, fields) => {
+        if (err) {
+          const response = {
+            success: false,
+            message: err.message,
+            data: {},
+          };
+          compress(response);
+          res.status(500).send(response);
+          next(err);
 
-    //     next(err);
-    //     // throw new customErrorHandler(400, err);
-    //   } else {
-    //     const response = {
-    //       success: true,
-    //       message: `${result.affectedRows} rows affected`,
-    //       data: results,
-    //     };
-    //     compress(response);
+          // throw new customErrorHandler(400, err);
+        } else {
+          const response = {
+            success: true,
+            message: `${result.affectedRows} rows affected`,
+            data: results,
+          };
+          compress(response);
 
-    //     res.status(200).send({
-    //       response,
-    //     });
-    //   }
-    // });
+          res.status(200).send({
+            response,
+          });
+        }
+      });
+    } else {
+      const response = {
+        success: false,
+        message: "JWT Token doesnot match",
+        data: {},
+      };
+      compress(response);
+      res.status(500).send(response);
+      next(err);
+    }
   }
 };
 
@@ -238,7 +246,6 @@ const login = (req, res, next) => {
         next(err);
       } else {
         const jwt = sign(loginDetails.id);
-        console.log(jwt);
         const response = {
           success: true,
           token: jwt,
