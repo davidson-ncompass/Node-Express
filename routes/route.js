@@ -10,8 +10,10 @@ const {
 } = require("../Controller/studentController");
 
 // router.get("/read/", readStudent);
-router.get("/", (req, res) => {
-  res.json("Welcome to student Crud");
+router.get("/", (req, res, next) => {
+  console.log("This is middleware");
+  res.json("Welcome");
+  next();
 });
 router.get("/display-all-student-record", readAll);
 router.get("/display-student-record", readOne);
