@@ -9,6 +9,7 @@ const {
 const { status } = require("express/lib/response");
 const customErrorHandler = require("../error/customErrorHandler");
 const compress = require("../utilities/compressRes");
+const { verify } = require("../utilities/authentication");
 
 const insertStudent = (req, res, next) => {
   const studentDetails = req.query;
@@ -22,29 +23,38 @@ const insertStudent = (req, res, next) => {
   ];
   const result = studentSchema.validate(studentDetails);
   if (result.error) {
-    res.status(500).send({
-      status: status,
+    const response = {
       success: false,
       message: result.error.message,
       data: {},
-    });
+    };
+    compress(response);
+    res.status(500).send(response);
     next(result.error);
   } else {
-    connection.query(sqlQuery, value, (err, result, fields) => {
+    connection.query(sqlQuery, value, (err, results, fields) => {
       if (err) {
-        res.status(500).send({
+        const response = {
           success: false,
           message: err.message,
           data: {},
-        });
+        };
+        compress(response);
+        res.status(500).send(response);
+        next(err);
+
         next(err);
         // throw new customErrorHandler(400, err);
       } else {
-        res.status(200).send({
-          status: status,
+        const response = {
           success: true,
-          message: `${result.affectedRows} row affected`,
-          data: {},
+          message: `${result.affectedRows} rows affected`,
+          data: results,
+        };
+        compress(response);
+
+        res.status(200).send({
+          response,
         });
       }
     });
@@ -58,25 +68,35 @@ const updateStudent = (req, res, next) => {
 
   const result = updateSchema.validate(updateDetails);
   if (result.error) {
-    res.status(500).send({
+    const response = {
       success: false,
       message: result.error.message,
       data: {},
-    });
+    };
+    compress(response);
+    res.status(500).send(response);
+    next(result.error);
   } else {
-    connection.query(sqlQuery, values, (err, result, fields) => {
+    connection.query(sqlQuery, values, (err, results, fields) => {
       if (err) {
-        res.status(500).send({
+        const response = {
           success: false,
           message: err.message,
           data: {},
-        });
+        };
+        compress(response);
+        res.status(500).send(response);
         next(err);
       } else {
-        res.status(200).send({
+        const response = {
           success: true,
           message: `${result.affectedRows} rows affected`,
-          data: {},
+          data: results,
+        };
+        compress(response);
+
+        res.status(200).send({
+          response,
         });
       }
     });
@@ -90,25 +110,35 @@ const deleteStudent = (req, res, next) => {
   const value = [studentID.id];
   const result = deleteSchema.validate(studentID);
   if (result.error) {
-    res.status(500).send({
+    const response = {
       success: false,
       message: result.error.message,
       data: {},
-    });
+    };
+    compress(response);
+    res.status(500).send(response);
+    next(result.error);
   } else {
     connection.query(sqlQuery, value, (err, results, fields) => {
       if (err) {
-        // res.status(500).send({
-        //   success: false,
-        //   message: err.message,
-        //   data: {},
-        // });
-        // next(err);
+        const response = {
+          success: false,
+          message: err.message,
+          data: {},
+        };
+        compress(response);
+        res.status(500).send(response);
+        next(err);
       } else {
-        res.status(200).send({
+        const response = {
           success: true,
           message: `${result.affectedRows} rows affected`,
-          data: {},
+          data: results,
+        };
+        compress(response);
+
+        res.status(200).send({
+          response,
         });
       }
     });
@@ -119,11 +149,13 @@ const readAll = (req, res, next) => {
   const sqlQuery = "select id, student_name, department, cgpa from student;";
   connection.query(sqlQuery, (err, results, fields) => {
     if (err) {
-      res.status(500).send({
+      const response = {
         success: false,
         message: err.message,
         data: {},
-      });
+      };
+      compress(response);
+      res.status(500).send(response);
       next(err);
     } else {
       const response = {
@@ -132,8 +164,6 @@ const readAll = (req, res, next) => {
         data: results,
       };
       compress(response);
-
-      console.log(response);
 
       res.status(200).send({
         response,
@@ -150,46 +180,64 @@ const readOne = (req, res, next) => {
 
   const result = readStudentSchema.validate(studentDetail);
   if (result.error) {
-    res.status(500).send({
+    const response = {
       success: false,
       message: result.error.message,
       data: {},
-    });
+    };
+    compress(response);
+    res.status(500).send(response);
+    next(result.error);
   } else {
     connection.query(sqlQuery, value, (err, results, fields) => {
       if (err) {
-        res.status(500).send({
+        const response = {
           success: false,
           message: err.message,
           data: {},
-        });
+        };
+        compress(response);
+        res.status(500).send(response);
+        next(err);
         next(err);
       } else {
-        res.status(200).send({
+        const response = {
           success: true,
-          message: "Record Retrived",
-          data: results.map((result) => result),
+          message: "Verified and Rows retrived",
+          data: results,
+        };
+        compress(response);
+        verify(response.data[0].id);
+        res.status(200).send({
+          response,
         });
       }
     });
   }
 };
 
-const login = (req, res, next) => {
+const login = (req, results, next) => {
   const loginDetails = req.query;
   const result = loginSchema.validate(loginDetails);
   if (result.error) {
-    res.status(500).send({
+    const response = {
       success: false,
       message: result.error.message,
       data: {},
-    });
+    };
+    compress(response);
+    res.status(500).send(response);
     next(result.error);
   } else {
-    res.status(200).send({
+    const response = {
       success: true,
       message: result.value,
-      data: {},
+      data: results,
+    };
+    compress(response);
+
+    res.status(200).send({
+      response,
     });
   }
 };

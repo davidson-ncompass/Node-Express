@@ -6,7 +6,6 @@ const compress = async (res) => {
     var compressed = zlib.inflate(response, (error, result) => {
       return resolve(result);
     });
-    //   return output;
   });
 };
 
