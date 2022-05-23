@@ -7,6 +7,7 @@ const {
   loginSchema,
 } = require("../modules/validationSchema");
 const { status } = require("express/lib/response");
+const customErrorHandler = require("../error/customErrorHandler");
 
 const insertStudent = (req, res, next) => {
   const studentDetails = req.query;
@@ -26,6 +27,7 @@ const insertStudent = (req, res, next) => {
       message: result.error.message,
       data: {},
     });
+    next(result.error);
   } else {
     connection.query(sqlQuery, value, (err, result, fields) => {
       if (err) {
@@ -34,7 +36,8 @@ const insertStudent = (req, res, next) => {
         //   message: err.message,
         //   data: {},
         // });
-        next(err);
+        // next(err);
+        throw new customErrorHandler(400, err);
       } else {
         res.status(200).send({
           status: status,
@@ -67,6 +70,7 @@ const updateStudent = (req, res, next) => {
           message: err.message,
           data: {},
         });
+        next(err);
       } else {
         res.status(200).send({
           success: true,
@@ -83,7 +87,6 @@ const deleteStudent = (req, res, next) => {
   const studentID = req.query;
   const sqlQuery = "delete from student where id =?;";
   const value = [studentID.id];
-  console.log(value);
   const result = deleteSchema.validate(studentID);
   if (result.error) {
     res.status(500).send({
@@ -94,11 +97,12 @@ const deleteStudent = (req, res, next) => {
   } else {
     connection.query(sqlQuery, value, (err, results, fields) => {
       if (err) {
-        res.status(500).send({
-          success: false,
-          message: err.message,
-          data: {},
-        });
+        // res.status(500).send({
+        //   success: false,
+        //   message: err.message,
+        //   data: {},
+        // });
+        // next(err);
       } else {
         res.status(200).send({
           success: true,
@@ -108,7 +112,6 @@ const deleteStudent = (req, res, next) => {
       }
     });
   }
-  next();
 };
 
 const readAll = (req, res, next) => {
@@ -120,6 +123,7 @@ const readAll = (req, res, next) => {
         message: err.message,
         data: {},
       });
+      next(err);
     } else {
       res.status(200).send({
         success: true,
@@ -128,7 +132,6 @@ const readAll = (req, res, next) => {
       });
     }
   });
-  next();
 };
 
 const readOne = (req, res, next) => {
@@ -152,6 +155,7 @@ const readOne = (req, res, next) => {
           message: err.message,
           data: {},
         });
+        next(err);
       } else {
         res.status(200).send({
           success: true,
@@ -161,7 +165,6 @@ const readOne = (req, res, next) => {
       }
     });
   }
-  next();
 };
 
 const login = (req, res, next) => {
@@ -173,6 +176,7 @@ const login = (req, res, next) => {
       message: result.error.message,
       data: {},
     });
+    next(result.error);
   } else {
     res.status(200).send({
       success: true,
@@ -180,7 +184,6 @@ const login = (req, res, next) => {
       data: {},
     });
   }
-  next();
 };
 
 module.exports = {
