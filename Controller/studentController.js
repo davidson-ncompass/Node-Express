@@ -47,7 +47,7 @@ const insertStudent = (req, res, next) => {
   }
 };
 
-const updateStudent = (req, res) => {
+const updateStudent = (req, res, next) => {
   const updateDetails = req.query;
   const sqlQuery = "update student set student_name = ? where id = ?;";
   const values = [updateDetails.student_name, updateDetails.id];
@@ -76,9 +76,10 @@ const updateStudent = (req, res) => {
       }
     });
   }
+  next();
 };
 
-const deleteStudent = (req, res) => {
+const deleteStudent = (req, res, next) => {
   const studentID = req.query;
   const sqlQuery = "delete from student where id =?;";
   const value = [studentID.id];
@@ -107,9 +108,10 @@ const deleteStudent = (req, res) => {
       }
     });
   }
+  next();
 };
 
-const readAll = (req, res) => {
+const readAll = (req, res, next) => {
   const sqlQuery = "select id, student_name, department, cgpa from student;";
   connection.query(sqlQuery, (err, results, fields) => {
     if (err) {
@@ -126,9 +128,10 @@ const readAll = (req, res) => {
       });
     }
   });
+  next();
 };
 
-const readOne = (req, res) => {
+const readOne = (req, res, next) => {
   const studentDetail = req.query;
   const sqlQuery =
     "select id, student_name, department, cgpa from student where id =?;";
@@ -158,9 +161,10 @@ const readOne = (req, res) => {
       }
     });
   }
+  next();
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const loginDetails = req.query;
   const result = loginSchema.validate(loginDetails);
   if (result.error) {
@@ -176,6 +180,7 @@ const login = (req, res) => {
       data: {},
     });
   }
+  next();
 };
 
 module.exports = {
