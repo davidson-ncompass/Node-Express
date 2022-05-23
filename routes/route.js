@@ -1,5 +1,7 @@
 const router = require("express").Router();
 
+const errorHandler = require("../error/errorHandler");
+
 const {
   insertStudent,
   deleteStudent,
@@ -18,6 +20,7 @@ router.get("/", (req, res, next) => {
 router.get("/display-all-student-record", readAll);
 router.get("/display-student-record", readOne);
 router.get("/create", insertStudent);
+router.use(errorHandler);
 router.get("/update", updateStudent);
 router.get("/delete", deleteStudent);
 router.get("/login", login);

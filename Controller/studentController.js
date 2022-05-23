@@ -8,7 +8,7 @@ const {
 } = require("../modules/validationSchema");
 const { status } = require("express/lib/response");
 
-const insertStudent = (req, res) => {
+const insertStudent = (req, res, next) => {
   const studentDetails = req.query;
   const sqlQuery =
     "insert into student (id, student_name, department, cgpa) values (?,?,?,?);";
@@ -29,11 +29,12 @@ const insertStudent = (req, res) => {
   } else {
     connection.query(sqlQuery, value, (err, result, fields) => {
       if (err) {
-        res.status(500).send({
-          success: false,
-          message: err.message,
-          data: {},
-        });
+        // res.status(500).send({
+        //   success: false,
+        //   message: err.message,
+        //   data: {},
+        // });
+        next(err);
       } else {
         res.status(200).send({
           status: status,
