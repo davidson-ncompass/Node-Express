@@ -8,6 +8,7 @@ const {
 } = require("../modules/validationSchema");
 const { status } = require("express/lib/response");
 const customErrorHandler = require("../error/customErrorHandler");
+const compress = require("../utilities/compressRes");
 
 const insertStudent = (req, res, next) => {
   const studentDetails = req.query;
@@ -31,13 +32,13 @@ const insertStudent = (req, res, next) => {
   } else {
     connection.query(sqlQuery, value, (err, result, fields) => {
       if (err) {
-        // res.status(500).send({
-        //   success: false,
-        //   message: err.message,
-        //   data: {},
-        // });
-        // next(err);
-        throw new customErrorHandler(400, err);
+        res.status(500).send({
+          success: false,
+          message: err.message,
+          data: {},
+        });
+        next(err);
+        // throw new customErrorHandler(400, err);
       } else {
         res.status(200).send({
           status: status,
@@ -125,10 +126,17 @@ const readAll = (req, res, next) => {
       });
       next(err);
     } else {
-      res.status(200).send({
+      const response = {
         success: true,
         message: "Rows retrived",
-        data: results.map((result) => result),
+        data: results,
+      };
+      compress(response);
+
+      console.log(response);
+
+      res.status(200).send({
+        response,
       });
     }
   });
