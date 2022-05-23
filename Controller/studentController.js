@@ -9,18 +9,12 @@ const {
 const { status } = require("express/lib/response");
 const customErrorHandler = require("../error/customErrorHandler");
 const compress = require("../utilities/compressRes");
-const { verify } = require("../utilities/authentication");
+const { sign, verify } = require("../utilities/authentication");
 
 const insertStudent = (req, res, next) => {
   const studentDetails = req.query;
-  const sqlQuery =
-    "insert into student (id, student_name, department, cgpa) values (?,?,?,?);";
-  const value = [
-    studentDetails.id,
-    studentDetails.student_name,
-    studentDetails.department,
-    studentDetails.cgpa,
-  ];
+  const sqlQuery = "insert into std_table (id, email) values (?,?);";
+  const value = [studentDetails.id, studentDetails.email];
   const result = studentSchema.validate(studentDetails);
   if (result.error) {
     const response = {
@@ -32,32 +26,34 @@ const insertStudent = (req, res, next) => {
     res.status(500).send(response);
     next(result.error);
   } else {
-    connection.query(sqlQuery, value, (err, results, fields) => {
-      if (err) {
-        const response = {
-          success: false,
-          message: err.message,
-          data: {},
-        };
-        compress(response);
-        res.status(500).send(response);
-        next(err);
+    const verified = verify(studentDetails.id);
+    console.log(verified);
+    // connection.query(sqlQuery, value, (err, results, fields) => {
+    //   if (err) {
+    //     const response = {
+    //       success: false,
+    //       message: err.message,
+    //       data: {},
+    //     };
+    //     compress(response);
+    //     res.status(500).send(response);
+    //     next(err);
 
-        next(err);
-        // throw new customErrorHandler(400, err);
-      } else {
-        const response = {
-          success: true,
-          message: `${result.affectedRows} rows affected`,
-          data: results,
-        };
-        compress(response);
+    //     next(err);
+    //     // throw new customErrorHandler(400, err);
+    //   } else {
+    //     const response = {
+    //       success: true,
+    //       message: `${result.affectedRows} rows affected`,
+    //       data: results,
+    //     };
+    //     compress(response);
 
-        res.status(200).send({
-          response,
-        });
-      }
-    });
+    //     res.status(200).send({
+    //       response,
+    //     });
+    //   }
+    // });
   }
 };
 
@@ -199,7 +195,6 @@ const readOne = (req, res, next) => {
         compress(response);
         res.status(500).send(response);
         next(err);
-        next(err);
       } else {
         const response = {
           success: true,
@@ -216,8 +211,10 @@ const readOne = (req, res, next) => {
   }
 };
 
-const login = (req, results, next) => {
+const login = (req, res, next) => {
   const loginDetails = req.query;
+  const query = "Select id, email from std_table where id =?;";
+  const value = loginDetails.id;
   const result = loginSchema.validate(loginDetails);
   if (result.error) {
     const response = {
@@ -229,16 +226,43 @@ const login = (req, results, next) => {
     res.status(500).send(response);
     next(result.error);
   } else {
-    const response = {
-      success: true,
-      message: result.value,
-      data: results,
-    };
-    compress(response);
-
-    res.status(200).send({
-      response,
+    connection.query(query, value, (err, results, fields) => {
+      if (err) {
+        const response = {
+          success: false,
+          message: err.message,
+          data: {},
+        };
+        compress(response);
+        res.status(500).send(response);
+        next(err);
+      } else {
+        const jwt = sign(loginDetails.id);
+        console.log(jwt);
+        const response = {
+          success: true,
+          token: jwt,
+          message: "Token Genereted and Rows retrived",
+          data: results,
+        };
+        compress(response);
+        verify(response.data[0].id);
+        res.status(200).send({
+          response,
+        });
+      }
     });
+
+    // const response = {
+    //   success: true,
+    //   message: result.value,
+    //   data: results,
+    // };
+    // compress(response);
+
+    // res.status(200).send({
+    //   response,
+    // });
   }
 };
 

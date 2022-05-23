@@ -7,16 +7,15 @@ let token;
 
 const sign = (id) => {
   token = jwt.sign(id, privateKey);
+  return token;
 };
-
-sign("S001");
 
 const verify = (id) => {
   const decoded = jwt.verify(token, privateKey);
   if (id === decoded) {
-    console.log("Verified");
+    return true;
   } else {
-    console.log("You are not authorized");
+    return false;
   }
 };
 

@@ -2,9 +2,8 @@ const Joi = require("joi");
 
 const studentSchema = Joi.object({
   id: Joi.string().max(4).min(4).alphanum().required(),
-  student_name: Joi.string().required(),
-  department: Joi.string().required(),
-  cgpa: Joi.number().required(),
+  email: Joi.string().email().required(),
+  userId: Joi.string().required(),
 });
 
 const updateSchema = Joi.object({
@@ -21,11 +20,8 @@ const readStudentSchema = Joi.object({
 });
 
 const loginSchema = Joi.object({
-  username: Joi.string().email().required(),
-  password: Joi.string()
-    .min(8)
-    .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
-    .required(),
+  id: Joi.string().max(4).min(4).alphanum().required(),
+  email: Joi.string().email().required(),
 });
 
 module.exports = {
