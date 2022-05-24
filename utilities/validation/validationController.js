@@ -1,11 +1,11 @@
-const { compress, compressGzip } = require("../utilities/compressRes");
+const { compress, compressGzip } = require("../compressRes");
 const {
   studentSchema,
   updateSchema,
   deleteSchema,
   readStudentSchema,
   loginSchema,
-} = require("../validation/validationSchema");
+} = require("./validationSchema");
 
 const createValidation = (req, res, next) => {
   studentDetails = req.query;

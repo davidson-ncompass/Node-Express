@@ -1,5 +1,5 @@
-const { verify } = require("../utilities/authentication");
-const { compress, compressGzip } = require("../utilities/compressRes");
+const { verify } = require("./authentication");
+const { compress, compressGzip } = require("../compressRes");
 
 const authenticateUser = (req, res, next) => {
   const authToken = req.headers.authorization.split(" ")[1];

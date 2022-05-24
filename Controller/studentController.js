@@ -1,7 +1,7 @@
 const { connection } = require("../utilities/connection");
-const customErrorHandler = require("../error/customErrorHandler");
+const customErrorHandler = require("../utilities/errorHandler/customErrorHandler");
 const { compress, compressGzip } = require("../utilities/compressRes");
-const { sign, verify } = require("../utilities/authentication");
+const { sign, verify } = require("../utilities/auth/authentication");
 
 const insertStudent = (req, res, next) => {
   const studentDetails = req.query;

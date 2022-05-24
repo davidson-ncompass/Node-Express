@@ -1,6 +1,6 @@
 const router = require("express").Router();
 
-const authenticateUser = require("../validation/authValidation");
+const authenticateUser = require("../utilities/auth/authValidation");
 const {
   insertStudent,
   deleteStudent,
@@ -15,7 +15,7 @@ const {
   deleteValidation,
   readOneValidation,
   loginValidation,
-} = require("../validation/validationController");
+} = require("../utilities/validation/validationController");
 
 router.get("/", (req, res, next) => {
   console.log("This is middleware");

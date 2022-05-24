@@ -1,7 +1,7 @@
 const express = require("express");
 const router = require("./routes/route");
 require("dotenv").config();
-const errorHandler = require("./error/errorHandlerMiddleware");
+const errorHandler = require("./utilities/errorHandler/errorHandlerMiddleware");
 
 const app = express();
 const PORT = process.env.PORT;
