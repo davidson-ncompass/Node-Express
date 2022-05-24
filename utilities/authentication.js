@@ -4,13 +4,14 @@ require("dotenv").config();
 const privateKey = process.env.SECRETKEY;
 let token;
 const sign = (id) => {
-  token = jwt.sign(id, privateKey);
+  token = jwt.sign({ id: id }, privateKey, { expiresIn: 90000 });
   return token;
 };
 
-const verify = (id) => {
+const verify = (userToken) => {
   const decoded = jwt.verify(token, privateKey);
-  if (id === decoded) {
+  const userTokenDecoded = jwt.verify(userToken, privateKey);
+  if (decoded.id === userTokenDecoded.id) {
     return true;
   } else {
     return false;

@@ -1,5 +1,6 @@
 const router = require("express").Router();
 
+const authenticateUser = require("../validation/authValidation");
 const {
   insertStudent,
   deleteStudent,
@@ -8,18 +9,29 @@ const {
   readOne,
   login,
 } = require("../Controller/studentController");
-const authenticateUser = require("../modules/middlewareValidation");
+const {
+  createValidation,
+  updateValidation,
+  deleteValidation,
+  readOneValidation,
+  loginValidation,
+} = require("../validation/validationController");
 
 router.get("/", (req, res, next) => {
   console.log("This is middleware");
   res.json("Welcome");
   next();
 });
-router.get("/login", login);
-router.get("/create", authenticateUser, insertStudent);
-router.get("/update", authenticateUser, updateStudent);
-router.get("/delete", authenticateUser, deleteStudent);
+router.get("/login", loginValidation, login);
+router.get("/create", authenticateUser, createValidation, insertStudent);
+router.get("/update", authenticateUser, updateValidation, updateStudent);
+router.get("/delete", authenticateUser, deleteValidation, deleteStudent);
 router.get("/display-all-student-record", authenticateUser, readAll);
-router.get("/display-student-record", authenticateUser, readOne);
+router.get(
+  "/display-student-record",
+  authenticateUser,
+  readOneValidation,
+  readOne
+);
 
 module.exports = router;

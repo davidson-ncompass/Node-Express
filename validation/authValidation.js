@@ -1,22 +1,21 @@
 const { verify } = require("../utilities/authentication");
-const compress = require("../utilities/compressRes");
+const { compress, compressGzip } = require("../utilities/compressRes");
 
-const authenticateUser = (err, req, res, next) => {
-  studentDetails = req.tokenId;
+const authenticateUser = (req, res, next) => {
+  const authToken = req.headers.authorization.split(" ")[1];
 
-  if (!studentDetails.tokenId) {
+  if (!authToken) {
     const response = {
       success: false,
-      message: "Please provide userId",
+      message: "You are not authorized",
       data: {},
     };
     compress(response);
     res.status(500).send(response);
     next(err);
-    return;
   }
 
-  if (verify(studentDetails.tokenId)) {
+  if (verify(authToken)) {
     next();
   } else {
     const response = {
@@ -26,8 +25,6 @@ const authenticateUser = (err, req, res, next) => {
     };
     compress(response);
     res.status(500).send(response);
-    next(err);
-    return;
   }
 };
 
