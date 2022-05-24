@@ -2,9 +2,9 @@ const { verify } = require("../utilities/authentication");
 const compress = require("../utilities/compressRes");
 
 const authenticateUser = (err, req, res, next) => {
-  studentDetails = req.query;
+  studentDetails = req.tokenId;
 
-  if (!studentDetails.userId) {
+  if (!studentDetails.tokenId) {
     const response = {
       success: false,
       message: "Please provide userId",
@@ -16,7 +16,7 @@ const authenticateUser = (err, req, res, next) => {
     return;
   }
 
-  if (verify(studentDetails.userId)) {
+  if (verify(studentDetails.tokenId)) {
     next();
   } else {
     const response = {

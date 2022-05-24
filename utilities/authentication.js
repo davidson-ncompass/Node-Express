@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
-const privateKey = "unlockJson";
+const privateKey = process.env.SECRETKEY;
 let token;
 const sign = (id) => {
   token = jwt.sign(id, privateKey);
