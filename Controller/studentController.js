@@ -26,48 +26,35 @@ const insertStudent = (req, res, next) => {
     res.status(500).send(response);
     next(result.error);
   } else {
-    if (verify(studentDetails.userId)) {
-      connection.query(sqlQuery, value, (err, results, fields) => {
-        if (err) {
-          const response = {
-            success: false,
-            message: err.message,
-            data: {},
-          };
-          compress(response);
-          res.status(500).send(response);
-          next(err);
-
-          // throw new customErrorHandler(400, err);
-        } else {
-          const response = {
-            success: true,
-            message: `${result.affectedRows} rows affected`,
-            data: results,
-          };
-          compress(response);
-
-          res.status(200).send({
-            response,
-          });
-        }
-      });
-    } else {
-      const response = {
-        success: false,
-        message: "JWT Token doesnot match",
-        data: {},
-      };
-      compress(response);
-      res.status(500).send(response);
-      next(err);
-    }
+    connection.query(sqlQuery, value, (err, results, fields) => {
+      if (err) {
+        const response = {
+          success: false,
+          message: err.message,
+          data: {},
+        };
+        compress(response);
+        res.status(500).send(response);
+        next(err);
+        // throw new customErrorHandler(400, err);
+      } else {
+        const response = {
+          success: true,
+          message: `${results.affectedRows} rows affected`,
+          data: {},
+        };
+        compress(response);
+        res.status(200).send({
+          response,
+        });
+      }
+    });
   }
 };
 
 const updateStudent = (req, res, next) => {
   const updateDetails = req.query;
-  const sqlQuery = "update student set student_name = ? where id = ?;";
+  const sqlQuery = "update std_table set student_name = ? where id = ?;";
   const values = [updateDetails.student_name, updateDetails.id];
 
   const result = updateSchema.validate(updateDetails);
@@ -94,11 +81,10 @@ const updateStudent = (req, res, next) => {
       } else {
         const response = {
           success: true,
-          message: `${result.affectedRows} rows affected`,
-          data: results,
+          message: `${results.affectedRows} rows affected`,
+          data: {},
         };
         compress(response);
-
         res.status(200).send({
           response,
         });
@@ -110,7 +96,7 @@ const updateStudent = (req, res, next) => {
 
 const deleteStudent = (req, res, next) => {
   const studentID = req.query;
-  const sqlQuery = "delete from student where id =?;";
+  const sqlQuery = "delete from std_table where id =?;";
   const value = [studentID.id];
   const result = deleteSchema.validate(studentID);
   if (result.error) {
@@ -136,11 +122,10 @@ const deleteStudent = (req, res, next) => {
       } else {
         const response = {
           success: true,
-          message: `${result.affectedRows} rows affected`,
-          data: results,
+          message: `${results.affectedRows} rows affected`,
+          data: {},
         };
         compress(response);
-
         res.status(200).send({
           response,
         });
@@ -150,7 +135,7 @@ const deleteStudent = (req, res, next) => {
 };
 
 const readAll = (req, res, next) => {
-  const sqlQuery = "select id, student_name, department, cgpa from student;";
+  const sqlQuery = "select id, student_name, department, cgpa from std_table;";
   connection.query(sqlQuery, (err, results, fields) => {
     if (err) {
       const response = {
@@ -168,7 +153,6 @@ const readAll = (req, res, next) => {
         data: results,
       };
       compress(response);
-
       res.status(200).send({
         response,
       });
@@ -179,7 +163,7 @@ const readAll = (req, res, next) => {
 const readOne = (req, res, next) => {
   const studentDetail = req.query;
   const sqlQuery =
-    "select id, student_name, department, cgpa from student where id =?;";
+    "select id, student_name, department, cgpa from std_table where id =?;";
   const value = [studentDetail.id];
 
   const result = readStudentSchema.validate(studentDetail);
@@ -259,17 +243,6 @@ const login = (req, res, next) => {
         });
       }
     });
-
-    // const response = {
-    //   success: true,
-    //   message: result.value,
-    //   data: results,
-    // };
-    // compress(response);
-
-    // res.status(200).send({
-    //   response,
-    // });
   }
 };
 
